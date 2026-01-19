@@ -1,0 +1,328 @@
+Kubernetes
+-----------------------------------------
+
+Command to get the cluster name and details
+kubectl config current-context
+kubectl cluster-info
+kubectl config get-clusters
+kubectl get apiservices
+kubectl api-resources
+
+kubectl logs <pod-name> rtfapp.log -n <namespace> -c app
+
+
+- Command to enter inside the pod
+kubectl exec -it <pod-name> -n <namespace> -c app -- /bin/bash
+
+
+-------------------------------------------
+
+Command to create the eks cluster
+eksctl create cluster --region us-west-1 --name cs-eks-cluster2 --version 1.34 --nodegroup-name my-eks-cluster-nodegroup --nodes 1 nodes-min 1 nodes-max 2 --ssh-access --ssh-public-key rchimale --managed
+
+-------------------------------------------
+
+- Command to connect to the EKS cluster
+aws eks update-kubeconfig --region us-west-1 --name chethan-eks-cluster1
+aws eks update-kubeconfig --name cs-eks-cluster
+aws eks update-kubeconfig --name  cs-eks-cluster2
+
+--------------------------------------------
+List eks cluster
+
+aws eks list-clusters
+
+--------------------------------------------
+
+- Describe the configuration of the kubernetes cluster
+aws eks --region us-west-1 describe-cluster --name chethan-eks-cluster
+
+-------------------------------------------
+
+NAMESPACE
+-------------------------------------------
+
+kubectl get ns
+kubectl create namespace <namespace-name>
+
+(Set the default namespace)
+kubectl config set-context $(kubectl config current-context) —namespace=dev
+
+PODS
+--------------------------------------
+kubectl get pods
+kubectl get pods -A
+kubectl get pod <podname>
+kubectl get pods -n <namespace>
+kubectl get pods --namespace=kube-system
+kubectl get pods -o wide
+kubectl get pods --all-namespaces
+kubectl get pods --show-labels
+kubectl get pods -l app=nginx
+kubectl get pods -l env=prod,bu=finance,tier=frontend
+kubectl top pods -n <namespace>
+
+List the containers with name running inside the pod
+kubectl get pod <pod-name> -o jsonpath="{.spec.containers[*].name}"
+
+
+Live pod statis view when tried to do deploymentaws
+kubectl get pods -n <namespace> -w
+
+NODES
+------------------------------------------
+
+kubectl get nodes
+kubectl get nodes -o wide
+
+Command to check how many pods your nodes consists of and how many are used and how many left.
+kubectl describe node <node-name> | grep -i pods
+
+(Check the nodes capacity before deployment to see the nodes availability)
+kubectl top nodes
+
+
+kubectl drain <node-name>
+kubectl uncordon <Node-name>
+kubectl cordon <Node-name>
+
+DEPLOYMENTS
+-------------------------------------
+
+- Get deployments for all namespaces
+kubectl get deployments
+kubectl get deployments -A
+kubectl get deployment <deployments>
+kubectl get deployments -n <namespace>
+kubectl get deployments -o wide
+
+SERVICES
+--------------------------------------
+
+kubectl get services
+kubectl get services -A
+kubectl get service <services>
+kubectl get services -n <namespace>
+kubectl get services -o wide
+-------------------------------------
+
+kubectl get endpoints
+kubectl get ep
+
+kubectl get ingress
+
+kubectl get networkpolicies
+
+kubectl get configmaps
+
+kubectl get secrets
+
+kubectl get serviceaccounts
+
+kubectl get pods --field-selector=status.phase=Running
+kubectl get pods --sort-by=.metadata.creationTimestamp
+kubectl get events --field-selector type=Warning
+
+kubectl logs pod-name -n <namespace>| grep “rtf-app”
+
+If the application is running in multiple pods how to view the logs of all the containers instead of one pod
+kubectl logs -n 45f76b87-075b-4da0-81d6-f91c76809966 -l app=rtf-app
+
+kubectl logs --since=1h
+kubectl logs --previous
+
+
+———————————————
+
+Services troubleshooting
+kubectl get endpoints rtf-app -n 45f76b87-075b-4da0-81d6-f91c76809966
+If a Service has no endpoints, it will never work, even if pods are running.
+
+Service selector = Pod labels
+
+
+———————————————
+- Edit deployment configurations
+kubectl edit deployment testrtffapp2 -n 45f76b87-075b-4da0-81d6-f91c76809966
+
+
+
+
+aws ec2 create-key-pair --region us-west-2 --key-name chethandemokeypair --output text > chethankey.pem
+
+
+	eksctl create cluster \
+	--region us-west-1 \
+	--name chethan-eks-cluster1 \
+	--version 1.29 \
+	--nodegroup-name my-eks-cluster-nodegroup \
+	--nodes 1 \
+	--nodes-min 1 \
+	--nodes-max 2 \
+	--ssh-access \
+	--ssh-public-key rchimale \
+	--managed
+
+
+
+https://kubernetes.io/docs/concepts/overview/components/	
+
+
+—————————————
+
+ReplicaSet (Kubernetes) — Summary
+A ReplicaSet ensures a specified number of Pods are always running.
+If a Pod fails or is deleted, the ReplicaSet automatically creates a new one.
+ReplicaSets are usually managed by Deployments, not created directly.
+Structure: Deployment → ReplicaSet → Pods
+Commands:
+kubectl get replicasets
+kubectl get rs (short form)
+
+
+kubectl get replicasets
+kubectl get rs
+
+ReplicaSet is an object that makes sure a specific number of identical Pods are running at all times.
+Deployment
+   └── ReplicaSet
+         └── Pods
+
+How to check How many ReplicaSets exist on the system? in the default namespace
+kubectl get rs -n default
+
+kubectl describe rs <replicaset-name> -n <namespace>
+
+Delete replica set
+kubectl delete rs replicaset-1
+
+Scale replicaset
+kubectl scale replicaset new-replica-set --replicas=6 -n default
+kubectl edit rs new-replica-set -n default
+
+kubectl scale deployment my-app --replicas=5
+—————————————
+StatefulSet (Kubernetes) — Summary
+A StatefulSet manages stateful applications (apps that need stable identity and storage).
+Each Pod has:
+A stable, unique name (e.g., db-0, db-1)
+Persistent storage that stays even if the Pod restarts
+Pods are created, updated, and deleted in order.
+Used for databases like MySQL, PostgreSQL, MongoDB, etc.
+Structure: StatefulSet → Pods → Persistent Volumes
+Commands:
+kubectl get statefulsets
+kubectl get sts (short form)
+👉 Purpose: manage applications that need stable identity, ordered scaling, and persistent data.
+
+—————————————
+
+DaemonSet (Kubernetes) — Summary
+A DaemonSet ensures that one Pod runs on every node (or selected nodes) in the cluster.
+When a new node is added, the Pod is automatically created on that node.
+When a node is removed, the Pod is automatically deleted.
+Used for node-level services, not application replicas.
+
+Common use cases
+Log collection (Fluentd, Logstash)
+Monitoring agents (Prometheus node-exporter)
+Networking components (CNI plugins, kube-proxy)
+Security agents
+
+How DaemonSets work
+No replica count
+Kubernetes schedules exactly one Pod per node
+Can be limited using nodeSelector / tolerations
+——————————————
+kubectl get jobs
+kubectl get cronjobs
+
+A Job runs a task that must complete successfully.
+It creates one or more Pods and retries them until the task finishes.
+Once completed, the Job stops (Pods exit).
+Used for one-time or batch workloads, not long-running apps.
+——————————————-
+configmaps
+ConfigMap (Kubernetes) — Summary
+A ConfigMap stores non-sensitive configuration data separately from application code.
+It lets you change app configuration without rebuilding images.
+Data is stored as key–value pairs or config files.
+
+—————————————————————————————————————————————————————————————————————————————————————————————
+Kubernetes Question and answers
+
+1. What is Kubernetes?
+Kubernetes (K8s) is an open-source container orchestration platform that automates the deployment, scaling, and management of containerized applications.
+
+
+2. What is a Pod?
+A Pod is the smallest deployable unit in Kubernetes that contains one or more tightly coupled containers sharing the same network namespace and storage.
+
+3. What is a Node?
+A Node is a worker machine (VM or physical server) in a Kubernetes cluster that runs Pods.
+
+4. What is a Deployment?
+A Deployment is a Kubernetes object used to manage stateless applications by providing features like rolling updates, rollbacks, and scaling.
+
+5. What is a Service in Kubernetes?
+A Service exposes a set of Pods as a network service. Types include:
+ClusterIP (default, internal access)
+NodePort (external access using node IP & port)
+LoadBalancer (cloud load balancer)
+ExternalName (DNS mapping)
+
+6. What is the difference between Deployment and StatefulSet?
+Deployment
+StatefulSet
+Stateless apps
+Stateful apps
+No stable identity
+Stable network identity & storage
+Random pod naming
+Ordered naming (pod-0, pod-1, …)
+
+
+7. What is etcd?
+etcd is a distributed key-value store used by Kubernetes to store cluster state and configuration data.
+
+8. What is kube-apiserver?
+The API Server is the core control-plane component that exposes the Kubernetes API. All cluster communication happens through it.
+9. Explain the role of kube-controller-manager.
+It runs control loop controllers like:
+ReplicaSet Controller
+Node Controller
+Job Controller
+Endpoint Controller
+
+10. What is kube-scheduler?
+It assigns Pods to Nodes based on resource availability, taints/tolerations, affinity rules, etc.
+
+—————————
+
+Pod requests and limits: In Kubernetes, each pod can specify how much CPU and memory it “requests” and how much it’s allowed to “use” (limit).
+Default: If you don’t set any resource requests, Kubernetes assumes the pod can use whatever is available on the node (but the scheduler may have trouble deciding where to place it). Some distributions or setups may have default requests, like 512Mi memory and 0.25 CPU, but that’s not a hard Kubernetes rule—it depends on the cluster configuration.
+
+—————————
+Understanding the units
+Memory: Mi
+Mi = Mebibyte, which is 2^20 bytes = 1,048,576 bytes.
+Sometimes you see MB (megabyte), which is 10^6 bytes. Kubernetes uses Mi and Gi (Gibibytes) to avoid confusion.
+Example: 512Mi = 512 × 1,048,576 bytes ≈ 536,870,912 bytes (~512 MB).
+CPU: m
+m = millicores
+1000m = 1 full CPU core.
+Example:
+500m = 0.5 CPU core
+250m = 0.25 CPU core
+This is Kubernetes’ way of allowing fractional CPU allocation per pod.
+
+——————————-
+
+
+kubectl taint nodes node01 spray=mortein:NoSchedule
+
+
+Resource backup(Resource configs)
+kubectl get all --all-namespaces -o yaml > all-deploy-services.yaml
+
+
