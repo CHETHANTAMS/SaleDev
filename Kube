@@ -11,8 +11,6 @@ Output:
 Kubernetes control plane is running at https://20AA470C5912FB2FFF9CF2187C01F3C5.sk1.us-west-1.eks.amazonaws.com
 CoreDNS is running at https://20AA470C5912FB2FFF9CF2187C01F3C5.sk1.us-west-1.eks.amazonaws.com/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 
-To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
-
 #
 - kubectl config get-contexts
 Use case: See available clusters
@@ -39,34 +37,32 @@ Lists registered API extension services in the cluster (used to debug aggregated
 kubectl api-resources
 Lists all available resource types you can create or query in the cluster (used to discover built-in and custom resources).
 
-kubectl logs <pod-name> rtfapp.log -n <namespace> -c app
-
-
-- Command to enter inside the pod
-kubectl exec -it <pod-name> -n <namespace> -c app -- /bin/bash
-
 
 -------------------------------------------
 
-Command to create the eks cluster
+#
 eksctl create cluster --region us-west-1 --name cs-eks-cluster2 --version 1.34 --nodegroup-name my-eks-cluster-nodegroup --nodes 1 nodes-min 1 nodes-max 2 --ssh-access --ssh-public-key rchimale --managed
+Command to create the eks cluster
 
 -------------------------------------------
 
-- Command to connect to the EKS cluster
+#
 aws eks update-kubeconfig --region us-west-1 --name chethan-eks-cluster1
 aws eks update-kubeconfig --name cs-eks-cluster
 aws eks update-kubeconfig --name  cs-eks-cluster2
+Command to connect to the EKS cluster
 
 --------------------------------------------
+
+#
+aws eks list-clusters
 List eks cluster
 
-aws eks list-clusters
-
 --------------------------------------------
 
-- Describe the configuration of the kubernetes cluster
+#
 aws eks --region us-west-1 describe-cluster --name chethan-eks-cluster
+Describe the configuration of the kubernetes cluster
 
 -------------------------------------------
 
@@ -100,6 +96,12 @@ kubectl get pod <pod-name> -o jsonpath="{.spec.containers[*].name}"
 Live pod statis view when tried to do deploymentaws
 kubectl get pods -n <namespace> -w
 
+kubectl logs <pod-name> rtfapp.log -n <namespace> -c app
+
+Command to enter inside the pod
+kubectl exec -it <pod-name> -n <namespace> -c app -- /bin/bash
+
+
 NODES
 ------------------------------------------
 
@@ -111,8 +113,6 @@ kubectl describe node <node-name> | grep -i pods
 
 (Check the nodes capacity before deployment to see the nodes availability)
 kubectl top nodes
-
-
 kubectl drain <node-name>
 kubectl uncordon <Node-name>
 kubectl cordon <Node-name>
