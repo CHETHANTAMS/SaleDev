@@ -31,10 +31,13 @@ arn:aws:eks:us-west-1:619217093675:cluster/cs-eks-cluster
 kubectl config get-clusters
 It shows the names of the clusters that your local kubectl knows about (from ~/.kube/config or the file pointed to by KUBECONFIG)
 
-
 #
 kubectl get apiservices
+Lists registered API extension services in the cluster (used to debug aggregated APIs like metrics-server).
+
+#
 kubectl api-resources
+Lists all available resource types you can create or query in the cluster (used to discover built-in and custom resources).
 
 kubectl logs <pod-name> rtfapp.log -n <namespace> -c app
 
