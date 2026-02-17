@@ -73,7 +73,7 @@ kubectl get ns
 kubectl create namespace <namespace-name>
 
 (Set the default namespace)
-kubectl config set-context $(kubectl config current-context) —namespace=dev
+kubectl config set-context $(kubectl config current-context) —-namespace=dev
 
 PODS
 --------------------------------------
@@ -246,6 +246,69 @@ Use case: Monitor StatefulSet rollout
 Real scenario: Updating database container image safely.
 
 --------------------------------------
+INGRESS
+
+--------------------------------------
+#
+kubectl describe ingress <ingress-name>
+Use case: Debug routing issues
+Real scenario: URL works internally but not externally.
+
+#
+kubectl get ingress -o yaml
+Use case: Check rules & backend service mapping.
+
+
+--------------------------------------
+
+#Horizontal Pod Autoscaler
+kubectl get hpa
+kubectl describe hpa <hpa-name>
+kubectl autoscale deployment <deployment-name> --cpu-percent=50 --min=2 --max=10
+Use case: Automatically scale based on CPU
+Real scenario: Traffic spikes during peak hours.
+
+#Persistent Volumes
+kubectl get pv
+kubectl get pvc
+kubectl describe pvc <pvc-name>
+Real scenario: Pod stuck in Pending due to storage issue.
+
+#Debug Commands
+kubectl get events --sort-by=.metadata.creationTimestamp
+kubectl describe pod <pod-name> | grep -i events -A 20
+kubectl get pods --field-selector=status.phase=Pending
+Used when:
+Pod not scheduling
+ImagePullBackOff
+PVC not binding
+
+#RBAC
+kubectl get roles
+kubectl get rolebindings
+kubectl get clusterroles
+kubectl get clusterrolebindings
+Real scenario: Developer says “I don’t have access.”
+
+#Resource Quotas & Limits
+kubectl get resourcequota
+kubectl describe resourcequota <name>
+kubectl get limitrange
+Real scenario: Namespace hitting resource limit.
+
+#Port Forward
+kubectl port-forward pod/<pod-name> 8080:80
+Real scenario: Test service locally without exposing it.
+
+#Debugging Network Connectivity
+kubectl exec -it <pod-name> -- curl <service-name>
+kubectl exec -it <pod-name> -- nslookup <service-name>
+Used when:
+Service not reachable.
+
+#
+kubectl version --short
+Version & Cluster Info
 
 kubectl get endpoints
 kubectl get ep
