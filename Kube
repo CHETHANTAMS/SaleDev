@@ -2,12 +2,37 @@ Kubernetes
 -----------------------------------------
 
 Command to get the cluster name and details
-kubectl cluster-info
+#
+- kubectl cluster-info
 Use case: Verify cluster endpoint is reachable
 Real scenario: You just switched VPN and want to confirm your cluster is accessible.
 
-kubectl config current-context
+Output:
+Kubernetes control plane is running at https://20AA470C5912FB2FFF9CF2187C01F3C5.sk1.us-west-1.eks.amazonaws.com
+CoreDNS is running at https://20AA470C5912FB2FFF9CF2187C01F3C5.sk1.us-west-1.eks.amazonaws.com/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+
+#
+- kubectl config get-contexts
+Use case: See available clusters
+Real scenario: You work with dev, staging, and prod clusters and want to confirm you're not deploying to production accidentally..
+
+#
+- kubectl config current-context
+It prints the name of the context that kubectl is currently using to communicate with a Kubernetes cluster.
+A context in Kubernetes defines:
+Which Kubernetes cluster and configuration am I currently using
+
+Output:
+arn:aws:eks:us-west-1:619217093675:cluster/cs-eks-cluster
+
+#
 kubectl config get-clusters
+It shows the names of the clusters that your local kubectl knows about (from ~/.kube/config or the file pointed to by KUBECONFIG)
+
+
+#
 kubectl get apiservices
 kubectl api-resources
 
