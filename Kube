@@ -2,8 +2,11 @@ Kubernetes
 -----------------------------------------
 
 Command to get the cluster name and details
-kubectl config current-context
 kubectl cluster-info
+Use case: Verify cluster endpoint is reachable
+Real scenario: You just switched VPN and want to confirm your cluster is accessible.
+
+kubectl config current-context
 kubectl config get-clusters
 kubectl get apiservices
 kubectl api-resources
