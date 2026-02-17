@@ -89,6 +89,12 @@ kubectl get pods -l app=nginx
 kubectl get pods -l env=prod,bu=finance,tier=frontend
 kubectl top pods -n <namespace>
 
+kubectl describe pod <podname>
+Use case: View the lifecycle events (e.g., ImagePullBackOff, OOMKilled) and detailed configuration of a pod.
+
+kubectl get pod <pod-name> -o yaml
+kubectl delete pod <pod-name>
+
 List the containers with name running inside the pod
 kubectl get pod <pod-name> -o jsonpath="{.spec.containers[*].name}"
 
@@ -136,6 +142,110 @@ kubectl get service <services>
 kubectl get services -n <namespace>
 kubectl get services -o wide
 -------------------------------------
+
+Rollout
+------------------------------------
+#
+kubectl rollout status deployment <deployment-name>
+Use case: Confirm deployment success
+Real scenario: After deploying new version, ensure rollout completed.
+
+#
+kubectl rollout undo deployment <deployment-name>
+Use case: Revert bad release
+Real scenario: New release causing errors in production.
+
+
+#
+kubectl scale deployment <deployment-name> --replicas=5
+Use case: Increase/decrease pods
+Real scenario: Traffic spike during sale event.
+
+#
+kubectl rollout history deployment <deployment-name>
+See previous revisions of a deployment.
+Real Scenario
+Production is broken. You need to know which revision was stable.
+
+#
+kubectl rollout history deployment <deployment-name> --revision=3
+View Specific Revision
+
+#
+kubectl rollout undo deployment <deployment-name> --to-revision=2
+Rollback to Specific Revision
+
+#Restart pods without changing image.
+kubectl rollout restart deployment <deployment-name>
+
+#
+kubectl rollout pause deployment <deployment-name>
+Temporarily stop rollout updates.
+
+#
+kubectl rollout resume deployment <deployment-name>
+Continue paused rollout.
+
+#
+kubectl get deployment <deployment-name> -o yaml
+Check Deployment Strategy
+
+##################
+kubectl set image deployment/<deployment-name> <container-name>=nginx:1.27
+Use case: Update container image directly from CLI
+Real scenario: Hotfix image update without modifying YAML file.
+
+#
+kubectl set resources deployment <deployment-name> -c <container-name> --limits=cpu=500m,memory=512Mi
+Use case: Update CPU/Memory resources during rollout
+Real scenario: Production pods getting OOMKilled → increase memory limit quickly.
+
+#
+kubectl annotate deployment <deployment-name> kubernetes.io/change-cause="Bug fix release v2.1"
+Use case: Add change cause for revision tracking
+Real scenario: Track why a specific rollout happened when checking history.
+
+#
+kubectl rollout status deployment <deployment-name> --timeout=60s
+Use case: Set custom timeout for rollout
+Real scenario: CI/CD pipeline should fail if rollout takes too long.
+
+#
+kubectl get rs
+Use case: View ReplicaSets created by rollouts
+Real scenario: Debug old revisions and understand which ReplicaSet is active.
+
+#
+kubectl describe deployment <deployment-name>
+Use case: View rollout events and conditions
+Real scenario: Rollout stuck due to readiness probe failure.
+
+#
+kubectl delete rs <replicaset-name>
+Use case: Clean up old ReplicaSets (manual cleanup)
+Real scenario: Too many old revisions consuming resources.
+
+#
+kubectl patch deployment <deployment-name> -p '{"spec":{"minReadySeconds":10}}'
+Use case: Modify rollout behavior without full YAML apply
+Real scenario: Ensure pods stay ready for minimum time before next update.
+
+#
+kubectl apply -f deployment.yaml --record
+Use case: Record change cause automatically (older clusters)
+Real scenario: Keep revision history with change tracking.
+
+#
+kubectl rollout status daemonset <daemonset-name>
+Use case: Monitor DaemonSet rollout
+Real scenario: Updating node monitoring agent across all worker nodes.
+
+#
+kubectl rollout status statefulset <statefulset-name>
+Use case: Monitor StatefulSet rollout
+Real scenario: Updating database container image safely.
+
+--------------------------------------
 
 kubectl get endpoints
 kubectl get ep
