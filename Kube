@@ -299,7 +299,6 @@ Real scenario: Namespace hitting resource limit.
 #Port Forward
 kubectl port-forward pod/<pod-name> 8080:80
 Real scenario: Test service locally without exposing it.
-
 #Debugging Network Connectivity
 kubectl exec -it <pod-name> -- curl <service-name>
 kubectl exec -it <pod-name> -- nslookup <service-name>
@@ -528,5 +527,47 @@ kubectl taint nodes node01 spray=mortein:NoSchedule
 
 Resource backup(Resource configs)
 kubectl get all --all-namespaces -o yaml > all-deploy-services.yaml
+
+------------------------------------------
+
+SELF HEALING
+
+------------------------------------------
+
+Self-Healing capabilities
+
+#
+Container-level restarts: 
+If a container inside a Pod fails, Kubernetes restarts it based on the restartPolicy.
+
+#
+Replica replacement: 
+If a Pod in a Deployment or StatefulSet fails, Kubernetes creates a replacement Pod to maintain the specified number of replicas. If a Pod that is part of a DaemonSet fails, the control plane creates a replacement Pod to run on the same node.
+
+#
+Persistent storage recovery: 
+If a node is running a Pod with a PersistentVolume (PV) attached, and the node fails, Kubernetes can reattach the volume to a new Pod on a different node.
+
+#
+Load balancing for Services: 
+If a Pod behind a Service fails, Kubernetes automatically removes it from the Service's endpoints to route traffic only to healthy Pods.
+
+#
+Here are some of the key components that provide Kubernetes self-healing:
+kubelet: 
+Ensures that containers are running, and restarts those that fail.
+
+Deployment (via ReplicaSet), ReplicaSet, StatefulSet and DaemonSet controllers: Maintain the desired number of Pod replicas.
+
+PersistentVolume controller: 
+Manages volume attachment and detachment for stateful workloads
+
+https://kubernetes.io/docs/concepts/architecture/self-healing/
+--------------------------------------------
+
+
+
+
+
 
 
