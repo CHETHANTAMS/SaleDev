@@ -1,0 +1,144 @@
+Connectivity & Reachability
+---------------------------
+#ping
+ping google.com
+
+Tests basic network connectivity to a host using ICMP and measures latency/packet loss.
+
+#traceroute
+traceroute google.com
+
+Displays the path (hops) packets take to reach a destination.
+
+#mtr
+mtr google.com
+
+Combines ping and traceroute to show real-time latency and packet loss per hop.
+
+#ip
+ip addr show
+ip route show
+
+Modern Linux networking command used to manage IP addresses, routes, and interfaces.
+
+-------------------------
+DNS Troubleshooting
+--------------------------
+#dig
+dig example.com
+dig example.com A
+dig example.com MX
+
+Advanced DNS query tool used to retrieve detailed DNS record information.
+
+#nslookup
+
+nslookup example.com
+
+Simple DNS lookup utility to resolve domain names to IP addresses.
+
+#host
+host example.com
+
+Lightweight command to perform DNS lookups and reverse lookups.
+
+ˇPorts & Services Troubleshootin
+
+#host
+host example.com
+
+Lightweight command to perform DNS lookups and reverse lookups.
+
+---------------------------------
+Ports & Services Troubleshootingg
+---------------------------------
+
+#netstat -tulnp
+Shows listening ports & connections.
+
+-t TCP
+-u UDP
+-l Listening
+-n Numeric
+-p Process
+
+Displays active network connections, listening ports, and routing tables.
+
+#ss -tulnp
+Modern replacement for netstat
+
+Modern replacement for netstat used to view socket statistics and connections.
+
+#lsof -i :8080
+Check which process is using a port.
+
+Lists open files, including which process is using a specific port.
+
+#nc
+nc -zv google.com 443
+
+Test TCP/UDP connectivity.
+Checks if port is open. Utility to test TCP/UDP connectivity and interact with network services.
+
+-------------------
+HTTP / API Testing
+------------------
+
+#curl
+
+curl -I https://example.com
+curl -v https://example.com
+
+Command-line tool to send HTTP requests and test APIs or web services.
+
+Tests API endpoints
+Shows HTTP headers
+Debug SSL issues
+
+#wget
+
+wget https://example.com/file.zip
+
+Downloads files
+Used in automation scripts
+
+
+Tool used to download files from web servers via HTTP, HTTPS, or FTP.
+
+------------------------
+Packet Level Debugging
+-----------------------
+
+#tcpdump -i eth0 port 80
+Captures packets
+Deep troubleshooting
+Useful in Kubernetes nodes & servers
+
+Captures and analyzes network packets at the interface level.
+
+
+-----------------------
+Routing & Network Info
+----------------------
+
+#route -n
+Legacy command used to view and modify the routing table.
+
+#ip route
+
+Shows default gateway
+Shows static routes
+
+Displays or manages the system’s IP routing table.
+
+
+------------------------
+Bandwidth & Performance
+-----------------------
+#iperf3 -c <server-ip>
+Tests network speed
+Measures throughput
+
+
+Measures network bandwidth and throughput between two systems.
+
